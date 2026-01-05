@@ -110,10 +110,6 @@ async function processVideo(file, username, start, end) {
       ffmpegOptions.push("-vf scale=-2:1080");
     }
 
-    let statusText = `⏳ clip de **${username}**`;
-
-    msg.edit(statusText);
-
     ffmpeg(inputPath)
       .outputOptions(ffmpegOptions)
       .save(outputPath)

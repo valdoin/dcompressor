@@ -16,7 +16,8 @@ body {
     margin: 0;
 }
 
-button, input {
+button,
+input {
     font-family: inherit;
 }
 
@@ -147,23 +148,6 @@ video {
 .highlight {
     color: #fff;
     font-weight: bold;
-}
-
-.progress {
-    width: 100%;
-    background: #333;
-    height: 10px;
-    border-radius: 5px;
-    margin-top: 15px;
-    overflow: hidden;
-    display: none;
-}
-
-.bar {
-    height: 100%;
-    background: #5865F2;
-    width: 0%;
-    transition: width 0.2s;
 }
 
 #status {

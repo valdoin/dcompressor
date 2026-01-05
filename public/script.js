@@ -103,8 +103,6 @@ video.ontimeupdate = function() {
 
 const form = document.getElementById('uploadForm');
 const status = document.getElementById('status');
-const bar = document.getElementById('progressBar');
-const progressContainer = document.querySelector('.progress');
 
 form.onsubmit = async (e) => {
     e.preventDefault();
@@ -125,25 +123,10 @@ form.onsubmit = async (e) => {
     formData.append('startTime', start);
     formData.append('endTime', end);
 
-    progressContainer.style.display = 'block';
-    status.innerText = "initialisation...";
-    bar.style.width = '0%';
+    status.innerText = "uploading...";
 
     const xhr = new XMLHttpRequest();
     xhr.open('POST', '/upload', true);
-
-    xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) {
-            const percent = (e.loaded / e.total) * 100;
-            bar.style.width = percent + '%';
-            
-            if (percent >= 100) {
-                status.innerText = "compression...";
-            } else {
-                status.innerText = "upload..." + Math.round(percent) + "%";
-            }
-        }
-    };
 
     xhr.onload = () => {
         if (xhr.status === 200) {
@@ -157,14 +140,11 @@ form.onsubmit = async (e) => {
             video.style.display = "none";
             slider.style.display = "none";
             timeDisplay.style.display = "none";
-            progressContainer.style.display = 'none';
             fileLabel.innerText = "fichier vidéo";
             fileLabel.classList.remove('has-file');
             fileLabel.classList.remove('dragover');
-            bar.style.width = '0%';
         } else {
             status.innerText = "❌ erreur: " + xhr.responseText;
-            bar.style.background = 'red';
         }
     };
 
