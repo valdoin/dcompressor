@@ -40,16 +40,16 @@ const upload = multer({
 app.use(express.static(path.join(__dirname, "public")));
 
 app.post("/upload", upload.single("video"), (req, res) => {
-  const { username, startTime, endTime } = req.body;
+  const { username, title, startTime, endTime } = req.body;
 
   if (!req.file) return res.status(400).send("no file uploaded.");
 
   res.send("Received!");
 
-  processVideo(req.file, username, parseFloat(startTime), parseFloat(endTime));
+  processVideo(req.file, username, title, parseFloat(startTime), parseFloat(endTime));
 });
 
-async function processVideo(file, username, start, end) {
+async function processVideo(file, username, title, start, end) {
   const inputPath = file.path;
   const outputPath = path.join("temp", `compressed_${file.filename}`);
 
@@ -60,7 +60,7 @@ async function processVideo(file, username, start, end) {
     return console.error("channel not found");
   }
 
-  const msg = await channel.send(`⏳ clip de **${username}**`);
+  const msg = await channel.send(`⏳ cooking`);
 
   ffmpeg.ffprobe(inputPath, (err, metadata) => {
     if (err) {
@@ -130,7 +130,7 @@ async function processVideo(file, username, start, end) {
             name: `clip_${username}.mp4`,
           });
           await channel.send({
-            content: `🎬 clip de **${username}**`,
+            content: `**${title} - ${username}**`,
             files: [attachment],
           });
           msg.delete().catch(() => {});

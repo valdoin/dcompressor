@@ -108,6 +108,7 @@ form.onsubmit = async (e) => {
     e.preventDefault();
     const file = fileInput.files[0];
     const user = document.getElementById('username').value;
+    const title = document.getElementById('videoTitle').value;
     
     if(!file) return;
 
@@ -120,6 +121,7 @@ form.onsubmit = async (e) => {
     const formData = new FormData();
     formData.append('video', file);
     formData.append('username', user);
+    formData.append('title', title);
     formData.append('startTime', start);
     formData.append('endTime', end);
 
