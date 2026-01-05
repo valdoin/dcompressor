@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dcompressor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h2>dcompressor</h2>
+        <form id="uploadForm">
+            <input type="text" id="username" placeholder="pseudo" required>
+
+            <div class="file-upload-wrapper">
+                <input type="file" id="videoFile" accept="video/*" required>
+                <label for="videoFile" id="fileLabel">
+                    fichier vidéo
+                </label>
+            </div>
+
+            <video id="preview" playsinline></video>
+
+            <div id="timeDisplay" class="time-display">
+                <span>début: <span id="startVal" class="highlight">0.0s</span></span>
+                <span id="durationVal">durée: 0.0s</span>
+                <span>fin: <span id="endVal" class="highlight">0.0s</span></span>
+            </div>
+            <div id="slider"></div>
+
+            <button type="submit" class="primary">envoyer</button>
+        </form>
+
+        <div class="progress">
+            <div class="bar" id="progressBar"></div>
+        </div>
+        <p id="status"></p>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
