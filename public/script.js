@@ -126,7 +126,8 @@ form.onsubmit = async (e) => {
     formData.append('endTime', end);
 
     progressContainer.style.display = 'block';
-    status.innerText = "upload...";
+    status.innerText = "Initializing upload...";
+    bar.classList.remove('processing');
 
     const xhr = new XMLHttpRequest();
     xhr.open('POST', '/upload', true);
@@ -135,10 +136,18 @@ form.onsubmit = async (e) => {
         if (e.lengthComputable) {
             const percent = (e.loaded / e.total) * 100;
             bar.style.width = percent + '%';
+            
+            if (percent >= 100) {
+                status.innerText = "compression...";
+                bar.classList.add('processing');
+            } else {
+                status.innerText = "upload..." + Math.round(percent) + "%";
+            }
         }
     };
 
     xhr.onload = () => {
+        bar.classList.remove('processing');
         if (xhr.status === 200) {
             status.innerText = "✅ y a bon";
             form.reset();
@@ -154,8 +163,9 @@ form.onsubmit = async (e) => {
             fileLabel.innerText = "fichier vidéo";
             fileLabel.classList.remove('has-file');
             fileLabel.classList.remove('dragover');
+            bar.style.width = '0%';
         } else {
-            status.innerText = "erreur: " + xhr.responseText;
+            status.innerText = "❌erreur: " + xhr.responseText;
             bar.style.background = 'red';
         }
     };
