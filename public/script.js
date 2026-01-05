@@ -126,8 +126,8 @@ form.onsubmit = async (e) => {
     formData.append('endTime', end);
 
     progressContainer.style.display = 'block';
-    status.innerText = "Initializing upload...";
-    bar.classList.remove('processing');
+    status.innerText = "initialisation...";
+    bar.style.width = '0%';
 
     const xhr = new XMLHttpRequest();
     xhr.open('POST', '/upload', true);
@@ -139,7 +139,6 @@ form.onsubmit = async (e) => {
             
             if (percent >= 100) {
                 status.innerText = "compression...";
-                bar.classList.add('processing');
             } else {
                 status.innerText = "upload..." + Math.round(percent) + "%";
             }
@@ -147,7 +146,6 @@ form.onsubmit = async (e) => {
     };
 
     xhr.onload = () => {
-        bar.classList.remove('processing');
         if (xhr.status === 200) {
             status.innerText = "✅ y a bon";
             form.reset();
@@ -165,7 +163,7 @@ form.onsubmit = async (e) => {
             fileLabel.classList.remove('dragover');
             bar.style.width = '0%';
         } else {
-            status.innerText = "❌erreur: " + xhr.responseText;
+            status.innerText = "❌ erreur: " + xhr.responseText;
             bar.style.background = 'red';
         }
     };
