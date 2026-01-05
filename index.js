@@ -13,7 +13,7 @@ ffmpeg.setFfprobePath(ffprobePath);
 const app = express();
 const PORT = 8080;
 
-const TARGET_SIZE_BYTES = 9.5 * 1024 * 1024;
+const TARGET_SIZE_BYTES = 9 * 1024 * 1024;
 const MAX_DISCORD_LIMIT = 10 * 1024 * 1024;
 const AUDIO_BITRATE = 64;
 
