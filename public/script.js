@@ -1,150 +1,207 @@
-const video = document.getElementById('preview');
-const slider = document.getElementById('slider');
-const fileInput = document.getElementById('videoFile');
+const { createFFmpeg, fetchFile } = FFmpeg;
+const ffmpeg = createFFmpeg({ log: true });
+
+const fileInput = document.getElementById('videoFiles');
 const fileLabel = document.getElementById('fileLabel');
-const timeDisplay = document.getElementById('timeDisplay');
-const startVal = document.getElementById('startVal');
-const endVal = document.getElementById('endVal');
-const durationVal = document.getElementById('durationVal');
+const videosList = document.getElementById('videosList');
+const form = document.getElementById('uploadForm');
+const status = document.getElementById('status');
+const submitBtn = document.getElementById('submitBtn');
+const addMoreBtn = document.getElementById('addMoreBtn');
 
-let isSliderCreated = false;
-
-function createSlider(duration) {
-    if (isSliderCreated) {
-        slider.noUiSlider.destroy();
-    }
-    
-    noUiSlider.create(slider, {
-        start: [0, duration],
-        connect: true,
-        range: { 'min': 0, 'max': duration },
-        step: 0.1,
-        behaviour: 'drag',
-    });
-
-    isSliderCreated = true;
-    slider.style.display = 'block';
-    timeDisplay.style.display = 'flex';
-
-    slider.noUiSlider.on('slide', function (values, handle) {
-        const time = parseFloat(values[handle]);
-        video.currentTime = time;
-    });
-
-    slider.noUiSlider.on('update', function (values) {
-        startVal.innerText = parseFloat(values[0]).toFixed(1) + 's';
-        endVal.innerText = parseFloat(values[1]).toFixed(1) + 's';
-        durationVal.innerText = 'durée: ' + (values[1] - values[0]).toFixed(1) + 's';
-    });
-}
-
-function loadVideo(file) {
-    if (file) {
-        fileLabel.innerText = "📄 " + file.name;
-        fileLabel.classList.add('has-file');
-
-        const url = URL.createObjectURL(file);
-        video.src = url;
-        video.style.display = "block";
-        
-        video.onloadedmetadata = function() {
-            createSlider(video.duration);
-            video.play();
-        };
-    }
-}
+let selectedFiles = [];
 
 fileInput.onchange = function(event) {
-    const file = event.target.files[0];
-    loadVideo(file);
+    const files = Array.from(event.target.files);
+    if(files.length > 0) {
+        handleFiles(files);
+    }
 };
 
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    fileLabel.addEventListener(eventName, preventDefaults, false);
-});
+addMoreBtn.onclick = function() {
+    fileInput.click();
+};
 
-function preventDefaults(e) {
-    e.preventDefault();
-    e.stopPropagation();
+function handleFiles(files) {
+    fileLabel.classList.add('has-file');
+    
+    const startIndex = selectedFiles.length;
+    files.forEach((file, index) => {
+        createVideoItem(file, startIndex + index);
+    });
+
+    fileLabel.innerText = `${selectedFiles.length} fichier(s) (drag and drop ou + pour ajouter)`;
+    fileInput.value = ''; 
+}
+
+function createVideoItem(file, index) {
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('video-card');
+
+    const title = document.createElement('h4');
+    title.classList.add('video-title');
+    title.innerText = `#${index+1} - ${file.name}`;
+
+    const video = document.createElement('video');
+    video.classList.add('video-preview');
+    video.src = URL.createObjectURL(file);
+    video.controls = true; 
+    
+    const timeInfo = document.createElement('div');
+    timeInfo.classList.add('time-display');
+    timeInfo.innerHTML = `<span>début: <b class="s-val">0.0s</b></span><span>fin: <b class="e-val">0.0s</b></span>`;
+    
+    const sliderDiv = document.createElement('div');
+    sliderDiv.classList.add('slider-container');
+
+    wrapper.appendChild(title);
+    wrapper.appendChild(video);
+    wrapper.appendChild(timeInfo);
+    wrapper.appendChild(sliderDiv);
+    videosList.appendChild(wrapper);
+
+    video.onloadedmetadata = function() {
+        const duration = video.duration;
+        
+        noUiSlider.create(sliderDiv, {
+            start: [0, duration],
+            connect: true,
+            range: { 'min': 0, 'max': duration },
+            step: 0.1,
+            behaviour: 'drag',
+        });
+
+        const sVal = timeInfo.querySelector('.s-val');
+        const eVal = timeInfo.querySelector('.e-val');
+
+        sliderDiv.noUiSlider.on('slide', function(values, handle) {
+             video.pause();
+             video.currentTime = parseFloat(values[handle]);
+        });
+
+        sliderDiv.noUiSlider.on('update', function(values) {
+            sVal.innerText = parseFloat(values[0]).toFixed(1) + 's';
+            eVal.innerText = parseFloat(values[1]).toFixed(1) + 's';
+        });
+
+        video.ontimeupdate = function() {
+            const current = video.currentTime;
+            const range = sliderDiv.noUiSlider.get();
+            const end = parseFloat(range[1]);
+            
+            if (current >= end) {
+                video.pause();
+                video.currentTime = end;
+            }
+        };
+
+        selectedFiles.push({
+            file: file,
+            slider: sliderDiv.noUiSlider,
+            videoElement: video,
+            originalDuration: duration
+        });
+        
+        fileLabel.innerText = `${selectedFiles.length} fichier(s) (drag and drop ou + pour ajouter)`;
+    };
 }
 
 ['dragenter', 'dragover'].forEach(eventName => {
-    fileLabel.addEventListener(eventName, () => fileLabel.classList.add('dragover'), false);
+    fileLabel.addEventListener(eventName, e => {
+        e.preventDefault(); 
+        e.stopPropagation();
+        fileLabel.classList.add('dragover');
+    }, false);
 });
 
 ['dragleave', 'drop'].forEach(eventName => {
-    fileLabel.addEventListener(eventName, () => fileLabel.classList.remove('dragover'), false);
+    fileLabel.addEventListener(eventName, e => {
+        e.preventDefault(); 
+        e.stopPropagation();
+        fileLabel.classList.remove('dragover');
+    }, false);
 });
 
-fileLabel.addEventListener('drop', handleDrop, false);
-
-function handleDrop(e) {
+fileLabel.addEventListener('drop', (e) => {
     const dt = e.dataTransfer;
-    const files = dt.files;
-
-    if (files.length > 0) {
-        fileInput.files = files;
-        loadVideo(files[0]);
+    if (dt.files.length > 0) {
+        handleFiles(Array.from(dt.files));
     }
-}
-
-video.ontimeupdate = function() {
-    if (!isSliderCreated) return;
-    
-    const values = slider.noUiSlider.get();
-    const start = parseFloat(values[0]);
-    const end = parseFloat(values[1]);
-
-    if (video.currentTime >= end || video.currentTime < start) {
-        video.currentTime = start;
-        video.play();
-    }
-};
-
-const form = document.getElementById('uploadForm');
-const status = document.getElementById('status');
+}, false);
 
 form.onsubmit = async (e) => {
     e.preventDefault();
-    const file = fileInput.files[0];
-    const user = document.getElementById('username').value;
-    const title = document.getElementById('videoTitle').value;
+    if(selectedFiles.length === 0) return;
     
-    if(!file) return;
+    const title = document.getElementById('videoTitle').value;
+    submitBtn.disabled = true;
+    selectedFiles.forEach(obj => obj.videoElement.pause());
 
-    video.pause();
-
-    const values = slider.noUiSlider.get();
-    const start = values[0];
-    const end = values[1];
+    if(!ffmpeg.isLoaded()) {
+        try {
+            await ffmpeg.load();
+        } catch(err) {
+            status.innerText = "erreur chargement FFmpeg (vérifiez headers)";
+            submitBtn.disabled = false;
+            return;
+        }
+    }
 
     const formData = new FormData();
-    formData.append('video', file);
-    formData.append('username', user);
     formData.append('title', title);
-    formData.append('startTime', start);
-    formData.append('endTime', end);
 
-    status.innerText = "uploading...";
+    for (let i = 0; i < selectedFiles.length; i++) {
+        const item = selectedFiles[i];
+        const values = item.slider.get();
+        const start = parseFloat(values[0]);
+        const end = parseFloat(values[1]);
+        const duration = end - start;
+
+        if (Math.abs(duration - item.originalDuration) < 0.5) {
+            formData.append('videos', item.file);
+            continue;
+        }
+
+        status.innerText = `découpage vidéo ${i+1}/${selectedFiles.length}...`;
+
+        const inputName = `input_${i}.mp4`;
+        const outputName = `output_${i}.mp4`;
+
+        ffmpeg.FS('writeFile', inputName, await fetchFile(item.file));
+
+        await ffmpeg.run(
+            '-ss', start.toString(),
+            '-t', duration.toString(),
+            '-i', inputName,
+            '-vf', 'scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:-1:-1',
+            '-c:v', 'libx264',
+            '-preset', 'ultrafast',
+            '-c:a', 'aac',
+            outputName
+        );
+
+        const data = ffmpeg.FS('readFile', outputName);
+        const trimmedBlob = new Blob([data.buffer], { type: 'video/mp4' });
+        formData.append('videos', trimmedBlob, `trimmed_${i}.mp4`);
+        
+        ffmpeg.FS('unlink', inputName);
+        ffmpeg.FS('unlink', outputName);
+    }
+
+    status.innerText = "envoi au serveur...";
 
     const xhr = new XMLHttpRequest();
     xhr.open('POST', '/upload', true);
 
     xhr.onload = () => {
+        submitBtn.disabled = false;
         if (xhr.status === 200) {
             status.innerText = "✅ y a bon";
             form.reset();
-
-            video.pause();
-            video.removeAttribute('src');
-            video.load();
-
-            video.style.display = "none";
-            slider.style.display = "none";
-            timeDisplay.style.display = "none";
-            fileLabel.innerText = "fichier vidéo";
+            videosList.innerHTML = '';
+            fileLabel.innerText = "fichiers vidéos";
             fileLabel.classList.remove('has-file');
-            fileLabel.classList.remove('dragover');
+            selectedFiles = [];
         } else {
             status.innerText = "❌ erreur: " + xhr.responseText;
         }

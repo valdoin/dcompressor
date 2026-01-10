@@ -28,6 +28,8 @@ input {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     width: 600px;
     text-align: center;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 input[type="text"] {
@@ -43,13 +45,16 @@ input[type="text"] {
 
 .file-upload-wrapper {
     margin: 20px 0;
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
 }
 
 input[type="file"] {
     display: none;
 }
 
-label[for="videoFile"] {
+label[for="videoFiles"] {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -63,15 +68,16 @@ label[for="videoFile"] {
     font-weight: bold;
     transition: all 0.2s ease;
     box-sizing: border-box;
+    flex-grow: 1;
 }
 
-label[for="videoFile"]:hover {
+label[for="videoFiles"]:hover {
     background: #333;
     border-color: #5865F2;
     color: white;
 }
 
-label[for="videoFile"].has-file {
+label[for="videoFiles"].has-file {
     border-color: #5865F2;
     color: white;
 }
@@ -81,6 +87,28 @@ label[for="videoFile"].has-file {
     border-color: #5865F2 !important;
     color: white !important;
     transform: scale(1.02);
+}
+
+.add-btn {
+    background: #2a2a2a;
+    border: 2px dashed #444;
+    color: #aaa;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 60px;
+    font-size: 1.5em;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.add-btn:hover {
+    background: #333;
+    border-color: #5865F2;
+    color: white;
 }
 
 button.primary {
@@ -101,21 +129,51 @@ button.primary:hover {
     background: #4752C4;
 }
 
-video {
-    width: 100%;
-    border-radius: 8px;
-    margin-top: 10px;
-    display: none;
-    max-height: 350px;
-    background: black;
-    margin-bottom: 20px;
+button:disabled {
+    background: #333;
+    cursor: not-allowed;
 }
 
-#slider {
-    margin: 0 10px 20px 10px;
-    display: none;
+#status {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #aaa;
+}
+
+.video-card {
+    margin-bottom: 30px;
+    background: #2a2a2a;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.video-title {
+    margin: 0 0 10px 0;
+    font-size: 0.9em;
+    color: #aaa;
+}
+
+.video-preview {
+    width: 100%;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    max-height: 300px;
+    background-color: #000;
+}
+
+.time-display {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-family: monospace;
+    color: #888;
+    font-size: 0.85em;
+}
+
+.slider-container {
     height: 10px;
-    border: none;
+    margin-bottom: 10px;
 }
 
 .noUi-connect {
@@ -133,25 +191,4 @@ video {
 .noUi-handle:before,
 .noUi-handle:after {
     display: none;
-}
-
-.time-display {
-    display: flex;
-    justify-content: space-between;
-    font-family: monospace;
-    color: #888;
-    font-size: 0.9em;
-    margin-bottom: 10px;
-    display: none;
-}
-
-.highlight {
-    color: #fff;
-    font-weight: bold;
-}
-
-#status {
-    margin-top: 15px;
-    font-size: 0.9em;
-    color: #aaa;
 }

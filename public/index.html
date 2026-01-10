@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,37 +7,29 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
 </head>
-
 <body>
-    <div class="container">
+    <div class="container" style="width: 800px;">
         <h2>dcompressor</h2>
         <form id="uploadForm">
-            <input type="text" id="username" placeholder="pseudo" required>
             <input type="text" id="videoTitle" placeholder="titre" required>
 
             <div class="file-upload-wrapper">
-                <input type="file" id="videoFile" accept="video/*" required>
-                <label for="videoFile" id="fileLabel">
-                    fichier vidéo
+                <input type="file" id="videoFiles" accept="video/*" multiple>
+                <label for="videoFiles" id="fileLabel">
+                    fichiers vidéos
                 </label>
+                <button type="button" id="addMoreBtn" class="add-btn" title="ajouter d'autres vidéos">+</button>
             </div>
 
-            <video id="preview" playsinline></video>
+            <div id="videosList"></div>
 
-            <div id="timeDisplay" class="time-display">
-                <span>début: <span id="startVal" class="highlight">0.0s</span></span>
-                <span id="durationVal">durée: 0.0s</span>
-                <span>fin: <span id="endVal" class="highlight">0.0s</span></span>
-            </div>
-            <div id="slider"></div>
-
-            <button type="submit" class="primary">envoyer</button>
+            <button type="submit" class="primary" id="submitBtn">envoyer</button>
         </form>
 
         <p id="status"></p>
     </div>
     <script src="script.js"></script>
 </body>
-
 </html>
