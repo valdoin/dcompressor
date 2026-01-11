@@ -141,7 +141,7 @@ form.onsubmit = async (e) => {
         try {
             await ffmpeg.load();
         } catch(err) {
-            status.innerText = "erreur chargement FFmpeg (vérifiez headers)";
+            status.innerText = "erreur chargement FFmpeg";
             submitBtn.disabled = false;
             return;
         }
@@ -188,7 +188,7 @@ form.onsubmit = async (e) => {
         ffmpeg.FS('unlink', outputName);
     }
 
-    status.innerText = "envoi au serveur...";
+    status.innerText = "upload en cours...";
 
     const xhr = new XMLHttpRequest();
     xhr.open('POST', '/upload', true);

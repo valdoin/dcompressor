@@ -1,14 +1,6 @@
-@font-face {
-    font-family: 'GGSans';
-    src: url('ggsans.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
 body {
     background: #121212;
     color: white;
-    font-family: 'GGSans', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,9 +8,8 @@ body {
     margin: 0;
 }
 
-button,
-input {
-    font-family: inherit;
+body, button, input, textarea {
+    font-family: 'JetBrains Mono', monospace;
 }
 
 .container {
