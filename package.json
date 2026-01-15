@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "start": "ts-node src/index.ts",
-  "dev": "ts-node src/index.ts"
-},
+    "start": "ts-node src/index.ts",
+    "dev": "ts-node src/index.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -25,7 +25,7 @@
     "@types/fluent-ffmpeg": "^2.1.28",
     "@types/multer": "^2.0.0",
     "@types/node": "^25.0.9",
-    "ts-node": "^10.9.2",
+    "ts-node": "^1.7.1",
     "typescript": "^5.9.3"
   }
 }
