@@ -20,8 +20,8 @@ A simple local web tool to trim, compress, and upload video clips directly to a 
     ```
 ## Usage
 
-1. Start the server: ```node index.js```  
+1. Compile the project : ```npx tsc```
 
-2. Open your browser and go to: ```http://localhost:8080```
+2. Start the server : ```node dist/index.js```
 
-3. Upload a video, set the time range, add a title/username, and click send.
+3. Go to : ```http://localhost:8080```
